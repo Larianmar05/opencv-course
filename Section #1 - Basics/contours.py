@@ -3,28 +3,32 @@
 import cv2 as cv
 import numpy as np
 
-img = cv.imread('../Resources/Photos/cats.jpg')
-cv.imshow('Cats', img)
+image_names = ['ME.jpg', 'me1.jpg', 'mywife.jpg', 'pancho.jpg']
 
-blank = np.zeros(img.shape, dtype='uint8')
-cv.imshow('Blank', blank)
+for name in image_names:
+    img = cv.imread(f'../Resources/Photos/{name}')
+    if img is None:
+        raise FileNotFoundError(f'Could not load image: ../Resources/Photos/{name}')
 
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-cv.imshow('Gray', gray)
+    cv.imshow(name, img)
 
-blur = cv.GaussianBlur(gray, (5,5), cv.BORDER_DEFAULT)
-cv.imshow('Blur', blur)
+    blank = np.zeros(img.shape, dtype='uint8')
+    cv.imshow(f'{name} Blank', blank)
 
-canny = cv.Canny(blur, 125, 175)
-cv.imshow('Canny Edges', canny)
+    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    cv.imshow(f'{name} Gray', gray)
 
-# ret, thresh = cv.threshold(gray, 125, 255, cv.THRESH_BINARY)
-# cv.imshow('Thresh', thresh)
+    blur = cv.GaussianBlur(gray, (5,5), cv.BORDER_DEFAULT)
+    cv.imshow(f'{name} Blur', blur)
 
-contours, hierarchies = cv.findContours(canny, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
-print(f'{len(contours)} contour(s) found!')
+    canny = cv.Canny(blur, 125, 175)
+    cv.imshow(f'{name} Canny Edges', canny)
 
-cv.drawContours(blank, contours, -1, (0,0,255), 1)
-cv.imshow('Contours Drawn', blank)
+    contours, hierarchies = cv.findContours(canny, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    print(f'{name}: {len(contours)} contour(s) found!')
+
+    cv.drawContours(blank, contours, -1, (0,0,255), 1)
+    cv.imshow(f'{name} Contours Drawn', blank)
 
 cv.waitKey(0)
+cv.destroyAllWindows()
